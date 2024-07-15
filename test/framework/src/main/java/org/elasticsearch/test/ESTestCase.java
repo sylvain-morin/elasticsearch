@@ -41,6 +41,7 @@ import org.apache.lucene.util.SetOnce;
 import org.elasticsearch.ExceptionsHelper;
 import org.elasticsearch.TransportVersion;
 import org.elasticsearch.action.ActionFuture;
+import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.RequestBuilder;
 import org.elasticsearch.action.support.ActionTestUtils;
 import org.elasticsearch.action.support.PlainActionFuture;
@@ -83,6 +84,7 @@ import org.elasticsearch.common.util.concurrent.ThreadContext;
 import org.elasticsearch.common.xcontent.LoggingDeprecationHandler;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.core.Booleans;
+import org.elasticsearch.core.CheckedConsumer;
 import org.elasticsearch.core.CheckedRunnable;
 import org.elasticsearch.core.PathUtils;
 import org.elasticsearch.core.PathUtilsForTesting;
@@ -2357,6 +2359,17 @@ public abstract class ESTestCase extends LuceneTestCase {
             Thread.currentThread().interrupt();
             fail(e, "safeSleep: interrupted");
         }
+    }
+
+    /**
+     * Return an {@link ActionListener} that must be completed successfully
+     *
+     * @param consumer The {@link Consumer} of the result
+     * @return An action listener that will fail with an assertion error if it gets an error response or is not completed
+     * @param <Response> the type of response to expect
+     */
+    public <Response> ActionListener<Response> safeConsume(CheckedConsumer<Response, ?> consumer) {
+        return ActionListener.assertAtLeastOnce(ActionListener.wrap(consumer, e -> fail(e, "safeConsume")));
     }
 
     /**
