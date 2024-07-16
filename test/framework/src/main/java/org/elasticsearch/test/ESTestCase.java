@@ -2365,7 +2365,7 @@ public abstract class ESTestCase extends LuceneTestCase {
      * Return an {@link ActionListener} that must be completed successfully
      *
      * @param consumer The {@link Consumer} of the result
-     * @return An action listener that will fail with an assertion error if it gets an error response or is not completed
+     * @return An action listener that will fail with an assertion error on an error response, if it's not completed, or the consumer throws
      * @param <Response> the type of response to expect
      */
     public <Response> ActionListener<Response> safeConsume(CheckedConsumer<Response, ?> consumer) {
