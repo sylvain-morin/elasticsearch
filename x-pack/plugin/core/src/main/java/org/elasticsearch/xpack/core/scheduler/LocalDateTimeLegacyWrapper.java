@@ -117,23 +117,23 @@ public class LocalDateTimeLegacyWrapper {
     }
 
     public void plusWeeks(long weeks) {
-        ldt =  ldt.plusWeeks(weeks);
+        ldt = ldt.plusWeeks(weeks);
     }
 
     public void plusDays(long days) {
-        ldt =  ldt.plusDays(days);
+        ldt = ldt.plusDays(days);
     }
 
     public void plusHours(long hours) {
-        ldt =  ldt.plusHours(hours);
+        ldt = ldt.plusHours(hours);
     }
 
     public void plusMinutes(long minutes) {
-        ldt =  ldt.plusMinutes(minutes);
+        ldt = ldt.plusMinutes(minutes);
     }
 
     public void plusSeconds(long seconds) {
-        ldt =  ldt.plusSeconds(seconds);
+        ldt = ldt.plusSeconds(seconds);
     }
 
     public boolean isAfter(ChronoLocalDateTime<?> other) {

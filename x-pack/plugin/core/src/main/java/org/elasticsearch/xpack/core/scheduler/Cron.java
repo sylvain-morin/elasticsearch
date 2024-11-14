@@ -8,6 +8,7 @@ package org.elasticsearch.xpack.core.scheduler;
 
 import org.elasticsearch.ElasticsearchParseException;
 import org.elasticsearch.common.time.DateFormatter;
+import org.elasticsearch.core.SuppressForbidden;
 import org.elasticsearch.xcontent.ToXContentFragment;
 import org.elasticsearch.xcontent.XContentBuilder;
 
@@ -301,6 +302,7 @@ public class Cron implements ToXContentFragment {
      *             a time that is previous to the given time)
      * @return the next valid time (since the epoch)
      */
+    @SuppressForbidden(reason = "In this case, the DST ambiguity of the atZone method is desired, understood and tested")
     public long getNextValidTimeAfter(final long time) {
 
         LocalDateTime afterTimeLdt = LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(time), timeZone.toZoneId()).plusSeconds(1);
