@@ -8,11 +8,14 @@
 package org.elasticsearch.xpack.core.scheduler;
 
 import org.elasticsearch.test.ESTestCase;
+import org.hamcrest.Matchers;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.time.zone.ZoneOffsetTransition;
 import java.time.zone.ZoneRules;
 
@@ -27,7 +30,7 @@ public class CronTimezoneTests extends ESTestCase {
         Cron cron = new Cron("0 0 2 * * ?", getTimeZone(ZoneOffset.of("+1")));
         long midnightUTC = Instant.parse("2020-01-01T00:00:00Z").toEpochMilli();
         long nextValidTimeAfter = cron.getNextValidTimeAfter(midnightUTC);
-        assertThat(nextValidTimeAfter, equalTo(Instant.parse("2020-01-01T01:00:00Z").toEpochMilli()));
+        assertThat(Instant.ofEpochMilli(nextValidTimeAfter), equalTo(Instant.parse("2020-01-01T01:00:00Z")));
     }
 
     public void testForLondonFixedDSTTransitionCheckCorrectSchedule() {
@@ -225,9 +228,10 @@ public class CronTimezoneTests extends ESTestCase {
             LocalDateTime targetTime = transition.getDateTimeAfter().plusMinutes(10);
             var cron = new Cron("0 " + targetTime.getMinute() + " " + targetTime.getHour() + " * * ?", getTimeZone(timezone));
 
+            long transitionLength = Math.abs(transition.getDuration().toSeconds());
             long firstTrigger = cron.
                 getNextValidTimeAfter(
-                transition.getInstant().minusSeconds(transition.getDuration().toSeconds()).minus(10, ChronoUnit.MINUTES).toEpochMilli()
+                transition.getInstant().minusSeconds(transitionLength).minus(10, ChronoUnit.MINUTES).toEpochMilli()
             );
 
             assertThat(ofEpochMilli(firstTrigger), equalTo(transition.getInstant().plusSeconds(600)));
