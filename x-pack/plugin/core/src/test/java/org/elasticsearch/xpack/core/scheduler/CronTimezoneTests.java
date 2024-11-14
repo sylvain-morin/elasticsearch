@@ -198,7 +198,7 @@ public class CronTimezoneTests extends ESTestCase {
     // This test checks that once per minute crons will be unaffected by a DST transition
     public void testDiscontinuityResolutionForCronInRandomTimezone() {
         var timezone = generateRandomDSTZone();
-        timezone = ZoneId.of("Europe/London");
+        //timezone = ZoneId.of("Europe/London");
 
         Instant referenceTime = randomInstantBetween(Instant.now(), Instant.now().plus(1826, ChronoUnit.DAYS)); // ~5 years
         ZoneOffsetTransition transition1 = timezone.getRules().nextTransition(referenceTime);
@@ -234,11 +234,12 @@ public class CronTimezoneTests extends ESTestCase {
                 transition.getInstant().minusSeconds(transitionLength).minus(10, ChronoUnit.MINUTES).toEpochMilli()
             );
 
-            assertThat(ofEpochMilli(firstTrigger), equalTo(transition.getInstant().plusSeconds(600)));
+            assertThat(ofEpochMilli(firstTrigger), equalTo(transition.getInstant().minusSeconds(transitionLength).plusSeconds(600)));
 
-            var repeatTrigger = firstTrigger + (1000 * 10L);
+            var repeatTrigger = cron.
+                getNextValidTimeAfter(firstTrigger + (1000 * 60L)); // 1 minute
 
-            assertThat(repeatTrigger - firstTrigger, Matchers.greaterThan(1000 * 60 * 60 * 6L));
+            assertThat(repeatTrigger - firstTrigger, Matchers.greaterThan(24 * 60 * 60 * 1000L));
         }
     }
 
